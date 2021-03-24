@@ -82,5 +82,5 @@ test:
 production:
   <<: *default
   database: trival_production
-  username: trival
-  password: <%= ENV['TRIVAL_DATABASE_PASSWORD'] %>
+  username: postgres
+  password: postgres

@@ -15,6 +15,8 @@ Things you may want to cover:
 
 * Database initialization
 
+CREATE ROLE gpaulo00 WITH CREATEDB LOGIN;
+
 * How to run the test suite
 
 * Services (job queues, cache servers, search engines, etc.)
