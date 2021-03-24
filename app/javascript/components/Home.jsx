@@ -59,23 +59,8 @@ class Home extends React.Component {
     );
 
     return (
-      <div className="primary-color d-flex align-items-center justify-content-center">
-        <div className="jumbotron jumbotron-fluid bg-transparent">
-          <div className="container secondary-color">
-            <div className="d-flex align-items-center justify-content-start">
-              <img width="150px" src="/tribal-guatemala.png" alt="Tribal"/>
-              <h1 className="display-5" style={{marginLeft: '10px'}}>Restaurantes</h1>
-            </div>
-            <p className="lead">
-              Una lista de restaurantes selectos alrededor del mundo.
-            </p>
-            <hr className="my-4" />
-
-            <div className="d-flex flex-wrap">
-              {restaurants.length > 0 ? allItems : noResult}
-            </div>
-          </div>
-        </div>
+      <div className="d-flex flex-wrap">
+        {restaurants.length > 0 ? allItems : noResult}
       </div>
     )
   }

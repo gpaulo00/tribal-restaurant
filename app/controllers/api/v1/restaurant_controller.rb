@@ -5,7 +5,7 @@ class Api::V1::RestaurantController < ApplicationController
   end
 
   def create
-    restaurant = Recipe.create!(restaurant_params)
+    restaurant = Restaurant.create!(restaurant_params)
     if restaurant
       render json: restaurant
     else
