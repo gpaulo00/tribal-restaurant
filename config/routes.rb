@@ -5,6 +5,7 @@ Rails.application.routes.draw do
       # restaurant
       get 'restaurant/index'
       post 'restaurant/create'
+      get 'restaurant/images/:id', to: 'restaurant#images'
       get 'restaurant/show/:id', to: 'restaurant#show'
       delete 'restaurant/destroy/:id', to: 'restaurant#destroy'
 

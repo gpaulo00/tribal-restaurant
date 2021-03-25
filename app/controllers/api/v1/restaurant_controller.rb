@@ -4,6 +4,14 @@ class Api::V1::RestaurantController < ApplicationController
     render json: restaurant
   end
 
+  def images
+    if restaurant
+      render json: restaurant.images
+    else
+      render json: restaurant.errors
+    end
+  end
+
   def create
     restaurant = Restaurant.create!(restaurant_params)
     if restaurant

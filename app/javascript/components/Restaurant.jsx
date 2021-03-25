@@ -1,4 +1,5 @@
 import React from "react";
+import { Link } from "react-router-dom";
 import { Slide } from 'react-slideshow-image';
 import 'react-slideshow-image/dist/styles.css';
 
@@ -12,6 +13,7 @@ class Restaurant extends React.Component {
         direction: null,
       },
       comments: [],
+      images: [],
       name: null,
       comment: null,
     };
@@ -31,6 +33,17 @@ class Restaurant extends React.Component {
         throw new Error("Network response was not ok.");
       })
       .then(response => this.setState({ restaurant: response }))
+      .catch(() => this.props.history.push("/"));
+    
+    // load images
+    fetch(`/api/v1/restaurant/images/${params.id}`)
+      .then(response => {
+        if (response.ok) {
+          return response.json();
+        }
+        throw new Error("Network response was not ok.");
+      })
+      .then(response => this.setState({ images: response }))
       .catch(() => this.props.history.push("/"));
     
     // load comments
@@ -79,15 +92,9 @@ class Restaurant extends React.Component {
   }
 
   render() {
-    const { restaurant } = this.state;
-    const slideImages = [
-      '/restaurants/celler.jpg',
-      '/restaurants/celler1.jpg',
-      '/restaurants/celler3.jpg'
-    ];
+    const { restaurant, images, comments } = this.state;
 
     // render comments
-    const { comments } = this.state;
     const allComments = comments.map((item, index) => (
       <div key={index} className="col-md-6 col-lg-4">
         <div className="card mb-4">
@@ -109,29 +116,31 @@ class Restaurant extends React.Component {
       </div>
     );
 
+    // render images
+    const allImages = images.map((item, index) => (
+      <div key={index} className="each-slide">
+        <img width="300px" height="300px" src={item.path}></img>
+      </div>
+    ));
+
     return (
       <div>
-        <div className="row">
+        <div className="row" style={{marginBottom: '10px'}}>
           <div className="col-md-7 col-sm-12">
             <h2 className="title">{restaurant.name}</h2>
             <p align="justify">
               {restaurant.description}
             </p>
+            <Link to="/" className="btn custom-button">
+              Volver
+            </Link>
           </div>
 
           <div className="col-md-5 col-sm-12">
             <center>
               <div className="slider-gp">
                 <Slide>
-                  <div className="each-slide">
-                    <img width="300px" height="300px" src={slideImages[0]}></img>
-                  </div>
-                  <div className="each-slide">
-                    <img width="300px" height="300px" src={slideImages[1]}></img>
-                  </div>
-                  <div className="each-slide">
-                    <img width="300px" height="300px" src={slideImages[2]}></img>
-                  </div>
+                  {allImages}
                 </Slide>
               </div>
             </center>
