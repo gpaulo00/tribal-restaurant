@@ -11,13 +11,19 @@ class Restaurant extends React.Component {
         name: null,
         direction: null,
       },
+      comments: [],
+      name: null,
+      comment: null,
     };
+
+    this.createComment = this.createComment.bind(this);
+    this.onChange = this.onChange.bind(this);
   }
 
   componentDidMount() {
+    // load data
     const { match: { params } } = this.props;
-    const url = `/api/v1/restaurant/show/${params.id}`;
-    fetch(url)
+    fetch(`/api/v1/restaurant/show/${params.id}`)
       .then(response => {
         if (response.ok) {
           return response.json();
@@ -26,6 +32,50 @@ class Restaurant extends React.Component {
       })
       .then(response => this.setState({ restaurant: response }))
       .catch(() => this.props.history.push("/"));
+    
+    // load comments
+    fetch(`/api/v1/comment/show/${params.id}`)
+      .then(response => {
+        if (response.ok) {
+          return response.json();
+        }
+        throw new Error("Network response was not ok.");
+      })
+      .then(response => this.setState({ comments: response }))
+      .catch(() => this.props.history.push("/"));
+  }
+
+  onChange(event) {
+    this.setState({ [event.target.name]: event.target.value });
+  }
+  createComment(ev) {
+    ev.preventDefault();
+    const { name, comment } = this.state;
+    const token = document.querySelector('meta[name="csrf-token"]').content;
+    const { match: { params } } = this.props;
+    const body = { name, comment, restaurant_id: params.id };
+
+    fetch(`/api/v1/comment/create`, {
+      method: "POST",
+      headers: {
+        "X-CSRF-Token": token,
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify(body),
+    })
+      .then(response => {
+        if (response.ok) {
+          return response.json();
+        }
+        throw new Error("Network response was not ok.");
+      })
+      .finally(() => {
+        this.props.history.go(0);
+      })
+  }
+  formatDate(date) {
+    const d = new Date(date)
+    return `${d.getDay()}/${d.getMonth()}/${d.getFullYear()}`
   }
 
   render() {
@@ -35,6 +85,30 @@ class Restaurant extends React.Component {
       '/restaurants/celler1.jpg',
       '/restaurants/celler3.jpg'
     ];
+
+    // render comments
+    const { comments } = this.state;
+    const allComments = comments.map((item, index) => (
+      <div key={index} className="col-md-6 col-lg-4">
+        <div className="card mb-4">
+          <div className="card-body">
+            <div className="d-flex justify-content-between">
+              <div className="comment-title">{item.name}</div>
+              <div>{this.formatDate(item.created_at)}</div>
+            </div>
+            <p align="justify">{item.comment}</p>
+          </div>
+        </div>
+      </div>
+    ));
+    const noComments = (
+      <div className="d-flex align-items-center justify-content-center">
+        <h4>
+          No hay comentarios aún.
+        </h4>
+      </div>
+    );
+
     return (
       <div>
         <div className="row">
@@ -65,8 +139,36 @@ class Restaurant extends React.Component {
         </div>
 
         <h2 className="subtitle">Comentarios</h2>
+        <div className="d-flex flex-wrap">
+          {comments.length > 0 ? allComments : noComments}
+        </div>
 
         <h2 className="subtitle">Escribir Comentario</h2>
+        <form className="col-md-6" onSubmit={this.createComment}>
+          <div className="form-group">
+            <label htmlFor="commentName">Nombre</label>
+            <input
+              type="text"
+              name="name"
+              id="commentName"
+              className="form-control"
+              required
+              onChange={this.onChange}
+            ></input>
+          </div>
+          <div className="form-group">
+            <label htmlFor="commentText">Comentario</label>
+            <textarea
+              name="comment"
+              id="commentText"
+              rows="5"
+              className="form-control"
+              required
+              onChange={this.onChange}
+            ></textarea>
+          </div>
+          <input type="submit" className="btn custom-button mt-3" value="Comentar"></input>
+        </form>
       </div>
     )
   }

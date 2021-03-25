@@ -2,10 +2,14 @@ Rails.application.routes.draw do
   # json api
   namespace :api do
     namespace :v1 do
+      # restaurant
       get 'restaurant/index'
       post 'restaurant/create'
       get 'restaurant/show/:id', to: 'restaurant#show'
       delete 'restaurant/destroy/:id', to: 'restaurant#destroy'
+
+      get 'comment/show/:id', to: 'comment#show'
+      post 'comment/create'
     end
   end
 
